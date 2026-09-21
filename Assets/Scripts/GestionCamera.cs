@@ -30,11 +30,7 @@ public class GestionnaireCameraJeu : MonoBehaviour
     }
 
     private void Update()
-    {
-        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
-        {
-            ActiverCameraSuiviBalle(balle);
-        }
+    {   
     }
 
     public void ActiverCameraLibre()

@@ -51,6 +51,15 @@ public class Trou : MonoBehaviour
         {
             drapeau.SetActive(true);
         }
+
+        if (balle != null)
+        {
+            Balle scriptBalle = balle.GetComponent<Balle>();
+            if (scriptBalle != null)
+            {
+                scriptBalle.ReinitialiserTir();
+            }
+        }
     }
 
     private void GérerVisibilitéDrapeau()
