@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class Balle : MonoBehaviour
 {
@@ -18,16 +19,21 @@ public class Balle : MonoBehaviour
     [SerializeField, Tooltip("Le gestionnaire de la caméra")] 
     private GestionnaireCameraJeu gestionnaireCamera;
 
+    [SerializeField, Tooltip("La barre de force à l'écran")]
+    private Slider barreForce;
 
     private Rigidbody rb;
 
     private bool estFrapee = false;
     private float chronoApresTir = 0f;
 
+    private Vector3 positionDepart;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        positionDepart = transform.position;
     }
 
     // Update is called once per frame
@@ -57,6 +63,7 @@ public class Balle : MonoBehaviour
         {
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
+            FigerBalle(true);
         }
 
         if (gestionnaireCamera != null)
@@ -71,14 +78,18 @@ public class Balle : MonoBehaviour
 
     public void FrapperBalle()
     {
-        // https://docs.unity3d.com/Packages/com.unity.inputsystem@0.1/manual/HowDoI.html
-        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+        if (Keyboard.current.spaceKey.isPressed)
         {
-            // La direction vient de la flèche que le joueur oriente avec Q/D (ou les flèches gauche/droite).
+            barreForce.value += 1 * Time.deltaTime;
+        }
+
+        if (Keyboard.current.spaceKey.wasReleasedThisFrame)
+        {
+            FigerBalle(false);
+
             Vector3 direction = directionTir != null ? directionTir.Direction : Vector3.right;
 
-            // https://discussions.unity.com/t/adding-impulse-based-to-an-object-using-other-objects-orientation/586707
-            rb.AddForce(direction * forceFrappe, ForceMode.Impulse);
+            rb.AddForce(direction * forceFrappe * barreForce.value, ForceMode.Impulse);
 
             if (directionTir != null)
             {
@@ -90,6 +101,7 @@ public class Balle : MonoBehaviour
                 gestionnaireCamera.ActiverCameraSuiviBalle(transform);
             }
 
+            barreForce.value = 0f;
             estFrapee = true;
         }
     }
@@ -106,6 +118,29 @@ public class Balle : MonoBehaviour
         if (rb.linearVelocity.magnitude <= seuilVitesseArret)
         {
             ReinitialiserTir();
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("HorsMap"))
+        {
+            transform.position = positionDepart;
+            ReinitialiserTir();
+        }
+    }
+
+    private void FigerBalle(bool figer)
+    {
+        if (rb == null) return;
+
+        if (figer)
+        {
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+        }
+        else
+        {
+            rb.constraints = RigidbodyConstraints.None;
         }
     }
 }

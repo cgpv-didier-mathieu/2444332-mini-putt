@@ -39,7 +39,14 @@ public class GestionnaireCameraJeu : MonoBehaviour
         cameraSuiviBalle.Priority = prioriteInactive;
 
         if (controleCameraLibre != null)
+        {
+            if (balle != null)
+            {
+                controleCameraLibre.transform.position = balle.position;
+            }
+
             controleCameraLibre.enabled = true;
+        }
     }
 
     public void ActiverCameraSuiviBalle(Transform balle)
