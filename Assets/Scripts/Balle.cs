@@ -29,6 +29,15 @@ public class Balle : MonoBehaviour
 
     private Vector3 positionDepart;
 
+
+    #region Machine à états de la tour
+    // État exécuté actuellement par la tour
+    private EtatBalle etatActuel;
+
+    // État à exécuter à la frame suivante.
+    private EtatBalle prochainEtat;
+    #endregion
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -36,11 +45,31 @@ public class Balle : MonoBehaviour
         positionDepart = transform.position;
     }
 
+    private void Awake()
+    {
+        // Initialisation de l'état de la tour
+        prochainEtat = new EtatParcourirTableau();
+        etatActuel = null;
+    }
+
     // Update is called once per frame
     void Update()
     {
         if (rb == null)
             return;
+
+        if (prochainEtat != etatActuel)
+        {
+            prochainEtat.OnEntrer(this);
+        }
+
+        etatActuel = prochainEtat;
+        prochainEtat = etatActuel.OnExecuter(this);
+
+        if (etatActuel != prochainEtat)
+        {
+            etatActuel.OnSortir(this);
+        }
 
         if (!estFrapee) {
             FrapperBalle();
