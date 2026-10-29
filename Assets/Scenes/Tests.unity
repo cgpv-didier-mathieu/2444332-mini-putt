@@ -1377,6 +1377,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1939400795185634984, guid: b4a92b8ec0f085746ba4033510ecec9e, type: 3}
+      propertyPath: controles
+      value: 
+      objectReference: {fileID: 155414152}
+    - target: {fileID: 1939400795185634984, guid: b4a92b8ec0f085746ba4033510ecec9e, type: 3}
       propertyPath: barreForce
       value: 
       objectReference: {fileID: 4328109}

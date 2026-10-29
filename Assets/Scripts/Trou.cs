@@ -57,7 +57,7 @@ public class Trou : MonoBehaviour
             Balle scriptBalle = balle.GetComponent<Balle>();
             if (scriptBalle != null)
             {
-                scriptBalle.ReinitialiserTir();
+                //scriptBalle.ReinitialiserTir();
             }
         }
     }

@@ -29,12 +29,13 @@ public class Balle : MonoBehaviour
 
     private Vector3 positionDepart;
 
+    [SerializeField, Tooltip("le input action du jeu")]
+    private PlayerInput controles;
+
+    public bool BasculeDemandee { get; private set; }
 
     #region Machine à états de la tour
-    // État exécuté actuellement par la tour
     private EtatBalle etatActuel;
-
-    // État à exécuter à la frame suivante.
     private EtatBalle prochainEtat;
     #endregion
 
@@ -43,13 +44,24 @@ public class Balle : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         positionDepart = transform.position;
-    }
+
+        InputAction actionBasculer = controles.actions.FindAction("player/BasculerEtat");
+        actionBasculer.performed += AppuyeTab;
+}
 
     private void Awake()
     {
-        // Initialisation de l'état de la tour
         prochainEtat = new EtatParcourirTableau();
         etatActuel = null;
+    }
+
+    private void OnDestroy()
+    {
+        InputAction actionBasculer = controles.actions.FindAction("player/BasculerEtat");
+        if (actionBasculer != null)
+        {
+            actionBasculer.performed -= AppuyeTab;
+        }
     }
 
     // Update is called once per frame
@@ -80,6 +92,7 @@ public class Balle : MonoBehaviour
         }
     }
 
+    
     public void ReinitialiserTir()
     {
         if (directionTir != null)
@@ -171,5 +184,15 @@ public class Balle : MonoBehaviour
         {
             rb.constraints = RigidbodyConstraints.None;
         }
+    }
+
+    private void AppuyeTab(InputAction.CallbackContext contexte)
+    {
+        BasculeDemandee = true;
+    }
+
+    public void ReinitialiserDemandeChangement()
+    {
+        BasculeDemandee = false;
     }
 }

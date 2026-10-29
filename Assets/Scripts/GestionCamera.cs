@@ -24,6 +24,13 @@ public class GestionnaireCameraJeu : MonoBehaviour
     [SerializeField]
     private Transform balle;
 
+    public static GestionnaireCameraJeu Instance { get; private set; }
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
     private void Start()
     {
         ActiverCameraLibre();
