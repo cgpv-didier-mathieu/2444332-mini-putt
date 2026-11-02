@@ -31,8 +31,11 @@ public class Balle : MonoBehaviour
 
     [SerializeField, Tooltip("le input action du jeu")]
     private PlayerInput controles;
+    private InputAction actionBasculer;
 
     public bool BasculeDemandee { get; private set; }
+    public bool BalleArretee { get; private set; }
+    public bool BalleFrappee { get; private set; }
 
     #region Machine à états de la tour
     private EtatBalle etatActuel;
@@ -40,14 +43,21 @@ public class Balle : MonoBehaviour
     #endregion
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody>();
         positionDepart = transform.position;
 
-        InputAction actionBasculer = controles.actions.FindAction("player/BasculerEtat");
-        actionBasculer.performed += AppuyeTab;
-}
+        if (controles != null)
+        {
+            actionBasculer = controles.actions.FindAction("player/BasculerEtat");
+
+            if (actionBasculer != null)
+            {
+                actionBasculer.performed += AppuyeTab;
+            }
+        }
+    }
 
     private void Awake()
     {
@@ -57,7 +67,6 @@ public class Balle : MonoBehaviour
 
     private void OnDestroy()
     {
-        InputAction actionBasculer = controles.actions.FindAction("player/BasculerEtat");
         if (actionBasculer != null)
         {
             actionBasculer.performed -= AppuyeTab;
@@ -83,7 +92,8 @@ public class Balle : MonoBehaviour
             etatActuel.OnSortir(this);
         }
 
-        if (!estFrapee) {
+        if (!estFrapee)
+        {
             FrapperBalle();
         }
         else
@@ -108,18 +118,17 @@ public class Balle : MonoBehaviour
             FigerBalle(true);
         }
 
-        if (gestionnaireCamera != null)
-        {
-            gestionnaireCamera.ActiverCameraLibre();
-        }
-
         transform.rotation = Quaternion.identity;
         estFrapee = false;
+        BalleArretee = false;
+        BalleFrappee = false;
         chronoApresTir = 0f;
     }
 
     public void FrapperBalle()
     {
+        BalleFrappee = false;
+
         if (Keyboard.current.spaceKey.isPressed)
         {
             barreForce.value += 1 * Time.deltaTime;
@@ -138,13 +147,9 @@ public class Balle : MonoBehaviour
                 directionTir.gameObject.SetActive(false);
             }
 
-            if (gestionnaireCamera != null)
-            {
-                gestionnaireCamera.ActiverCameraSuiviBalle(transform);
-            }
-
             barreForce.value = 0f;
             estFrapee = true;
+            BalleFrappee = true;
         }
     }
 
@@ -159,7 +164,8 @@ public class Balle : MonoBehaviour
         // Si la vitesse linéaire est très faible
         if (rb.linearVelocity.magnitude <= seuilVitesseArret)
         {
-            ReinitialiserTir();
+            BalleArretee = true;
+            estFrapee = false;
         }
     }
 
@@ -168,7 +174,11 @@ public class Balle : MonoBehaviour
         if (other.CompareTag("HorsMap"))
         {
             transform.position = positionDepart;
-            ReinitialiserTir();
+
+            if (estFrapee)
+            {
+                BalleArretee = true;
+            }
         }
     }
 

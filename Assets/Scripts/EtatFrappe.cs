@@ -13,6 +13,13 @@ public class EtatFrappe : EtatBalle
             return new EtatParcourirTableau();
         }
 
+        balle.FrapperBalle();
+
+        if (balle.BalleFrappee)
+        {
+            return new EtatRoule();
+        }
+
         return this;
     }
 

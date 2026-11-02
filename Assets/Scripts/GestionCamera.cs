@@ -63,5 +63,7 @@ public class GestionnaireCameraJeu : MonoBehaviour
 
         if (controleCameraLibre != null)
             controleCameraLibre.enabled = false;
+
+
     }
 }
