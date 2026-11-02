@@ -92,11 +92,7 @@ public class Balle : MonoBehaviour
             etatActuel.OnSortir(this);
         }
 
-        if (!estFrapee)
-        {
-            FrapperBalle();
-        }
-        else
+        if (estFrapee)
         {
             VerifierArretBalle();
         }
@@ -128,6 +124,8 @@ public class Balle : MonoBehaviour
     public void FrapperBalle()
     {
         BalleFrappee = false;
+        if (estFrapee) 
+            return;
 
         if (Keyboard.current.spaceKey.isPressed)
         {

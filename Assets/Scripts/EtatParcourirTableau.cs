@@ -14,6 +14,12 @@ public class EtatParcourirTableau : EtatBalle
             return new EtatFrappe();
         }
 
+        balle.FrapperBalle();
+        if (balle.BalleFrappee)
+        {
+            return new EtatRoule();
+        }
+
         return this;
     }
 
