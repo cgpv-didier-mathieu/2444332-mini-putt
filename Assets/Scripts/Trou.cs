@@ -6,18 +6,26 @@ public class Trou : MonoBehaviour
     [SerializeField, Tooltip("Point de départ où la balle sera téléportée")]
     private Transform pointDepart;
 
-    [Header("Gestion du Drapeau")]
-    [SerializeField, Tooltip("Le GameObject du drapeau à faire disparaître")]
-    private GameObject drapeau;
-
     [SerializeField, Tooltip("Distance à laquelle le drapeau disparaît")]
-    private float distanceMasquerDrapeau = 3.0f;
+    private float distanceMasquerDrapeau = 3f;
 
     private Transform balleTransform;
+
+    private Animator controleurAnimation;
+
+    [Header("Gestion du Drapeau")]
+    [SerializeField] private Animator animateurDrapeau;   // remplace le GameObject
+
+    private bool balleProche = false;
 
     private void Update()
     {
         GérerVisibilitéDrapeau();
+    }
+
+    private void Awake()
+    {
+        controleurAnimation = GetComponent<Animator>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -47,9 +55,10 @@ public class Trou : MonoBehaviour
         }
 
         // Réafficher le drapeau pour le prochain essai
-        if (drapeau != null)
+        if (animateurDrapeau != null)
         {
-            drapeau.SetActive(true);
+            balleProche = false;
+            animateurDrapeau.SetBool("BalleProche", false);
         }
 
         if (balle != null)
@@ -64,9 +73,9 @@ public class Trou : MonoBehaviour
 
     private void GérerVisibilitéDrapeau()
     {
-        if (drapeau == null) return;
+        if (animateurDrapeau == null)
+            return;
 
-        // Si la balle n'est pas encore trouvée dans la scène, on la cherche
         if (balleTransform == null)
         {
             GameObject balleObj = GameObject.FindWithTag("Balle");
@@ -74,17 +83,13 @@ public class Trou : MonoBehaviour
             return;
         }
 
-        // 4. Calcul de la distance entre la balle et le trou
         float distance = Vector3.Distance(transform.position, balleTransform.position);
+        bool proche = distance <= distanceMasquerDrapeau;
 
-        // 5. Faire disparaître le drapeau si la balle est proche
-        if (distance <= distanceMasquerDrapeau)
+        if (proche != balleProche)
         {
-            if (drapeau.activeSelf) drapeau.SetActive(false);
-        }
-        else
-        {
-            if (!drapeau.activeSelf) drapeau.SetActive(true);
+            balleProche = proche;
+            animateurDrapeau.SetBool("BalleProche", proche);
         }
     }
 }
